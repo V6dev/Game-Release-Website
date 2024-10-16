@@ -27,6 +27,8 @@
             text-align: center;
             position: relative;
             z-index: 1;
+            padding: 20px; /* Added padding for responsiveness */
+            max-width: 90%; /* Prevents overflow on smaller screens */
         }
 
         .background {
@@ -117,6 +119,36 @@
             100% {
                 transform: scale(0);
                 opacity: 0;
+            }
+        }
+
+        /* Media Queries for Responsive Design */
+        @media (max-width: 600px) {
+            .download-button {
+                font-size: 1.2rem; /* Smaller button text */
+                padding: 10px 20px; /* Adjust button padding */
+            }
+
+            .countdown {
+                font-size: 1.5rem; /* Smaller countdown text */
+            }
+
+            h1 {
+                font-size: 40px; /* Smaller heading on small screens */
+            }
+        }
+
+        @media (max-width: 400px) {
+            h1 {
+                font-size: 30px; /* Further reduce heading size */
+            }
+
+            .download-button {
+                padding: 8px 16px; /* Further adjust button padding */
+            }
+
+            .countdown {
+                font-size: 1.2rem; /* Further adjust countdown text size */
             }
         }
     </style>
