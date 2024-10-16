@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Lexend', sans-serif;
+            background-color: black;
+            cursor: none;
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(145deg, #000000, #660000);
+            overflow: hidden;
+        }
+
+        .background .particle {
+            position: absolute;
+            background-color: rgba(255, 0, 0, 0.8);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: float 5s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(50vw);
+                opacity: 0.3;
+            }
+        }
+
+        .download-button {
+            position: relative;
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            background-color: transparent;
+            color: red;
+            border: 2px solid rgba(255, 0, 0, 1);
+            cursor: pointer;
+            border-radius: 50px;
+            margin-top: 20px;
+            overflow: hidden;
+            box-shadow: 0px 0px 25px rgba(255, 0, 0, 0.7);
+            transition: all 0.3s ease;
+            display: none; /* Initially hidden */
+        }
+
+        .download-button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .download-button:hover:not(.disabled) {
+            background-color: rgba(255, 0, 0, 0.5);
+            color: white;
+            box-shadow: 0px 0px 40px rgba(255, 0, 0, 1);
+        }
+
+        /* Countdown Timer */
+        .countdown {
+            color: red;
+            font-size: 2rem;
+            margin-top: 20px;
+        }
+
+        /* Trail Effects */
+        .trail {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 998;
+            animation: trailFade 0.3s forwards;
+        }
+
+        @keyframes trailFade {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background with Floating Particles -->
+    <div class="background"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <h1 style="color: red; font-size: 60px;">A NIGHTMARE AWAITS...</h1>
+        <div class="countdown" id="countdown">Loading...</div> <!-- Countdown Timer -->
+        <button class="download-button disabled" id="downloadBtn" disabled>Download Beta</button> <!-- Disabled initially -->
+    </div>
+
+    <!-- Custom Cursor Trail -->
+    <script>
+        // Create floating particles in the background
+        const background = document.querySelector('.background');
+        const particleCount = 100;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.animationDuration = Math.random() * 5 + 3 + 's';
+            background.appendChild(particle);
+        }
+
+        // Custom Cursor Trail
+        const trails = [];
+
+        document.addEventListener('mousemove', function(e) {
+            const trail = document.createElement('div');
+            trail.classList.add('trail');
+            trail.style.left = e.pageX + 'px';
+            trail.style.top = e.pageY + 'px';
+            document.body.appendChild(trail);
+            trails.push(trail);
+
+            setTimeout(() => {
+                trail.remove();
+                trails.shift();
+            }, 300);
+        });
+
+        // Countdown Timer and Download Button Reveal
+        const downloadButton = document.getElementById("downloadBtn");
+        const countdownElement = document.getElementById("countdown");
+
+        // Release time: 20:00 PM Swedish time (UTC+1) on November 1st, 2024
+        const releaseDate = new Date(Date.UTC(2024, 10, 1, 19, 0, 0)); // 19:00 UTC = 20:00 Swedish time
+
+        function updateCountdown() {
+            const currentTime = new Date();
+            const remainingTime = releaseDate - currentTime;
+
+            if (remainingTime <= 0) {
+                countdownElement.style.display = 'none'; // Hide the countdown
+                downloadButton.classList.remove('disabled'); // Enable the download button
+                downloadButton.disabled = false; // Enable button
+                downloadButton.style.display = 'inline-block'; // Show the button
+                downloadButton.setAttribute("data-url", "https://discord.gg/vv5TFEStDC"); // Securely set the URL
+            } else {
+                const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+                countdownElement.textContent = `Download available in ${days}d ${hours}h ${minutes}m ${seconds}s`;
+            }
+        }
+
+        // Ask for geolocation permissions
+        function handleLocationSuccess(position) {
+            setInterval(updateCountdown, 1000); // Update countdown every second
+        }
+
+        function handleLocationError() {
+            countdownElement.textContent = 'Unable to retrieve your location. Using local timezone.';
+            setInterval(updateCountdown, 1000); // Default to local timezone
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(handleLocationSuccess, handleLocationError);
+        } else {
+            handleLocationError(); // If geolocation is not supported, fallback to local time
+        }
+
+        // Download button interaction
+        downloadButton.addEventListener("click", function() {
+            const url = downloadButton.getAttribute("data-url");
+            if (url) {
+                window.location.href = url; // Start download
+            } else {
+                alert("Download is not available yet!"); // Safety check to prevent early access
+            }
+        });
+
+        // Initialize countdown
+        setInterval(updateCountdown, 1000); // Update countdown every second
+    </script>
+
+</body>
+</html>
